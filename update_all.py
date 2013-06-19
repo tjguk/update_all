@@ -2,6 +2,8 @@ import os, sys
 import fnmatch
 import subprocess
 
+private_key_filepath = os.path.expandvars(r"%HOME%\.ssh\20120811.ppk")
+
 def svn_update (dirpath):
   basename = os.path.basename (dirpath)
   print ("svn: %s" % (basename))
@@ -24,7 +26,7 @@ def git_update (dirpath):
   print
 
 def main (root="."):
-  os.startfile(os.path.expandvars(r"%HOME%\.ssh\20120811.ppk"))
+  os.startfile(private_key_filepath)
   root = os.path.abspath (root)
   noupdate_filepath = os.path.join(root, ".noupdate")
   update_filepath = os.path.join (root, ".update")
