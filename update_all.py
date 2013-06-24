@@ -1,6 +1,7 @@
 import os, sys
 import fnmatch
 import subprocess
+import win32api
 
 private_key_filepath = os.path.expandvars(r"%HOME%\.ssh\20120811.ppk")
 
@@ -26,7 +27,8 @@ def git_update (dirpath):
   print
 
 def main (root="."):
-  os.startfile(private_key_filepath)
+  _, exe = win32api.FindExecutable(private_key_filepath)
+  subprocess.call([exe, private_key_filepath])
   root = os.path.abspath (root)
   noupdate_filepath = os.path.join(root, ".noupdate")
   update_filepath = os.path.join (root, ".update")
