@@ -27,8 +27,7 @@ def git_update (dirpath):
   print
 
 def main (root="."):
-  _, exe = win32api.FindExecutable(private_key_filepath)
-  subprocess.call([exe, private_key_filepath])
+  os.startfile(private_key_filepath)
   root = os.path.abspath (root)
   noupdate_filepath = os.path.join(root, ".noupdate")
   update_filepath = os.path.join (root, ".update")
