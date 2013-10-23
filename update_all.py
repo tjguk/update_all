@@ -10,14 +10,12 @@ def svn_update (dirpath):
   print ("svn: %s" % (basename))
   os.chdir (dirpath)
   subprocess.call (["svn", "up", "--ignore-externals"])
-  if os.path.isdir (os.path.join (dirpath, ".hg")):
-    subprocess.call (["hg", "commit", "-m", '"svn up"'], shell=True)
   print
 
 def hg_update (dirpath):
   print ("hg: %s" % (os.path.basename (dirpath)))
   os.chdir (dirpath)
-  subprocess.call (["hg", "pull --update"])
+  subprocess.call (["hg", "pull", "--update"])
   print
 
 def git_update (dirpath):
