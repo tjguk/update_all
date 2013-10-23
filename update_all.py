@@ -17,7 +17,7 @@ def svn_update (dirpath):
 def hg_update (dirpath):
   print ("hg: %s" % (os.path.basename (dirpath)))
   os.chdir (dirpath)
-  subprocess.call (["hg", "pull --update --rebase"])
+  subprocess.call (["hg", "pull --update"])
   print
 
 def git_update (dirpath):
