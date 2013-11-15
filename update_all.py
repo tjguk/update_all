@@ -11,19 +11,19 @@ def svn_update (dirpath):
   print ("svn: %s" % (basename))
   os.chdir (dirpath)
   subprocess.call (["svn", "up", "--ignore-externals"])
-  print
+  print()
 
 def hg_update (dirpath):
   print ("hg: %s" % (os.path.basename (dirpath)))
   os.chdir (dirpath)
   subprocess.call (["hg", "pull", "--update"])
-  print
+  print()
 
 def git_update (dirpath):
   print ("git: %s" % (os.path.basename (dirpath)))
   os.chdir (dirpath)
   subprocess.call (["git", "pull"])
-  print
+  print()
 
 def main (root="."):
   os.startfile(private_key_filepath)
