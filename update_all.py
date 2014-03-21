@@ -1,7 +1,6 @@
 import os, sys
 import fnmatch
 import subprocess
-import win32api
 
 private_key_filepath = os.path.expandvars(r"%HOME%\.ssh\20120811.ppk")
 
