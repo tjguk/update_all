@@ -44,6 +44,7 @@ def main (root="."):
 
     print("UPDATING: %s" % root)
     print("=" * len("UPDATING: %s" % root))
+    
     for dir in matching_dirs:
         dirpath = os.path.join(root, dir)
         update_filepath = os.path.join(dirpath, ".update")
@@ -55,6 +56,11 @@ def main (root="."):
             hg_update(dirpath)
         elif os.path.isdir(os.path.join (dirpath, ".git")):
             git_update(dirpath)
+        
+        complete_filepath = os.path.join(dirpath, "complete.cmd")
+        if os.path.isfile(complete_filepath):
+            subprocess.call(["cmd", "/c", complete_filepath])
+    
     print("=" * len("FINISHED: %s" % root))
     print("FINISHED: %s" % root)
 
