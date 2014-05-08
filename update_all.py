@@ -1,6 +1,8 @@
 import os, sys
 import fnmatch
 import subprocess
+import time
+
 import win32api
 
 private_key_filepath = os.path.expandvars(r"%HOME%\.ssh\20120811.ppk")
@@ -57,7 +59,7 @@ def main (root="."):
         elif os.path.isdir(os.path.join (dirpath, ".git")):
             git_update(dirpath)
     print("=" * len("FINISHED: %s" % root))
-    print("FINISHED: %s" % root)
+    print("FINISHED at %s: %s" % (time.asctime(), root))
 
 if __name__ == '__main__':
     main(*sys.argv[1:])
