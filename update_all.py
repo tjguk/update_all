@@ -2,13 +2,12 @@ import os, sys
 import fnmatch
 import subprocess
 
-private_key_filepath = os.path.expandvars(r"%HOME%\.ssh\20120811.ppk")
-
 def svn_update (dirpath):
     basename = os.path.basename(dirpath)
     print("svn: %s" % (basename))
     os.chdir(dirpath)
-    subprocess.call(["svn", "up", "--ignore-externals"])
+    # Skip for now while it's crashing hard
+    #~ subprocess.call(["svn", "up", "--ignore-externals"])
     print("")
 
 def hg_update (dirpath):
@@ -24,7 +23,6 @@ def git_update (dirpath):
     print("")
 
 def main (root="."):
-    os.startfile(private_key_filepath)
     root = os.path.abspath(root)
     noupdate_filepath = os.path.join(root, ".noupdate")
     update_filepath = os.path.join(root, ".update")
@@ -44,7 +42,7 @@ def main (root="."):
 
     print("UPDATING: %s" % root)
     print("=" * len("UPDATING: %s" % root))
-    
+
     for dir in matching_dirs:
         dirpath = os.path.join(root, dir)
         update_filepath = os.path.join(dirpath, ".update")
@@ -56,11 +54,11 @@ def main (root="."):
             hg_update(dirpath)
         elif os.path.isdir(os.path.join (dirpath, ".git")):
             git_update(dirpath)
-        
+
         complete_filepath = os.path.join(dirpath, "complete.cmd")
         if os.path.isfile(complete_filepath):
             subprocess.call(["cmd", "/c", complete_filepath])
-    
+
     print("=" * len("FINISHED: %s" % root))
     print("FINISHED: %s" % root)
 
