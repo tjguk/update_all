@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os, sys
 import fnmatch
 import subprocess
@@ -6,8 +7,7 @@ def svn_update (dirpath):
     basename = os.path.basename(dirpath)
     print("svn: %s" % (basename))
     os.chdir(dirpath)
-    # Skip for now while it's crashing hard
-    #~ subprocess.call(["svn", "up", "--ignore-externals"])
+    subprocess.call(["svn", "up", "--ignore-externals"])
     print("")
 
 def hg_update (dirpath):
@@ -19,7 +19,13 @@ def hg_update (dirpath):
 def git_update (dirpath):
     print("git: %s" % (os.path.basename (dirpath)))
     os.chdir(dirpath)
-    subprocess.call(["git", "pull"])
+    for remote in subprocess.check_output(["git", "remote"]).splitlines():
+        if remote == "origin":
+            command = "pull"
+        else:
+            command = "fetch"
+        print(command, remote, "=>", end=" ")
+        subprocess.call(["git", command, remote])
     print("")
 
 def main (root="."):
