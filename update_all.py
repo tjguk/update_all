@@ -1,11 +1,7 @@
+from __future__ import print_function
 import os, sys
 import fnmatch
 import subprocess
-import time
-
-import win32api
-
-private_key_filepath = os.path.expandvars(r"%HOME%\.ssh\20120811.ppk")
 
 def svn_update (dirpath):
     basename = os.path.basename(dirpath)
@@ -23,11 +19,16 @@ def hg_update (dirpath):
 def git_update (dirpath):
     print("git: %s" % (os.path.basename (dirpath)))
     os.chdir(dirpath)
-    subprocess.call(["git", "pull"])
+    for remote in subprocess.check_output(["git", "remote"]).splitlines():
+        if remote == "origin":
+            command = "pull"
+        else:
+            command = "fetch"
+        print(command, remote, "=>", end=" ")
+        subprocess.call(["git", command, remote])
     print("")
 
 def main (root="."):
-    os.startfile(private_key_filepath)
     root = os.path.abspath(root)
     noupdate_filepath = os.path.join(root, ".noupdate")
     update_filepath = os.path.join(root, ".update")
@@ -47,6 +48,7 @@ def main (root="."):
 
     print("UPDATING: %s" % root)
     print("=" * len("UPDATING: %s" % root))
+
     for dir in matching_dirs:
         dirpath = os.path.join(root, dir)
         update_filepath = os.path.join(dirpath, ".update")
@@ -58,8 +60,13 @@ def main (root="."):
             hg_update(dirpath)
         elif os.path.isdir(os.path.join (dirpath, ".git")):
             git_update(dirpath)
+
+        complete_filepath = os.path.join(dirpath, "complete.cmd")
+        if os.path.isfile(complete_filepath):
+            subprocess.call(["cmd", "/c", complete_filepath])
+
     print("=" * len("FINISHED: %s" % root))
-    print("FINISHED at %s: %s" % (time.asctime(), root))
+    print("FINISHED: %s" % root)
 
 if __name__ == '__main__':
     main(*sys.argv[1:])
