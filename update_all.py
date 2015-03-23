@@ -19,7 +19,8 @@ def hg_update (dirpath):
 def git_update (dirpath):
     print("git: %s" % (os.path.basename (dirpath)))
     os.chdir(dirpath)
-    for remote in subprocess.check_output(["git", "remote"]).splitlines():
+    for bremote in subprocess.check_output(["git", "remote"]).splitlines():
+        remote = bremote.decode("utf-8")
         if remote == "origin":
             command = "pull"
         else:
