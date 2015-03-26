@@ -27,6 +27,8 @@ def git_update (dirpath):
             command = "fetch"
         print(command, remote, "=>", end=" ")
         subprocess.call(["git", command, remote])
+        print("")
+    
     print("")
 
 def main (root="."):
