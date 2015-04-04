@@ -13,7 +13,7 @@ def svn_update (dirpath):
 def hg_update (dirpath):
     print("hg: %s" % (os.path.basename (dirpath)))
     os.chdir(dirpath)
-    subprocess.call(["hg", "pull", "--update"])
+    subprocess.call(["hg", "pull", "--update", "--verbose"])
     print("")
 
 def git_update (dirpath):
@@ -26,9 +26,9 @@ def git_update (dirpath):
         else:
             command = "fetch"
         print(command, remote, "=>", end=" ")
-        subprocess.call(["git", command, remote])
+        subprocess.call(["git", command, "--verbose", remote])
         print("")
-    
+
     print("")
 
 def main (root="."):
