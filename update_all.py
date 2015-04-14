@@ -66,7 +66,13 @@ def main (root="."):
 
         complete_filepath = os.path.join(dirpath, "complete.cmd")
         if os.path.isfile(complete_filepath):
-            subprocess.call(["cmd", "/c", complete_filepath])
+            subprocess.call([complete_filepath], shell=True)
+        
+        test_filepath = os.path.join(dirpath, "run-tests.cmd")
+        log_filepath = os.path.join(dirpath, "tests.log")
+        if os.path.isfile(test_filepath):
+            subprocess.call([test_filepath], shell=True)
+            os.startfile(log_filepath)
 
     print("=" * len("FINISHED: %s" % root))
     print("FINISHED: %s" % root)
