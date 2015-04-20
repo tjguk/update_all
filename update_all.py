@@ -2,6 +2,7 @@ from __future__ import print_function
 import os, sys
 import fnmatch
 import subprocess
+import time
 
 def svn_update (dirpath):
     basename = os.path.basename(dirpath)
@@ -49,7 +50,7 @@ def main (root="."):
                 and not os.path.isfile(os.path.join(d, ".noupdate"))
         )
 
-    print("UPDATING: %s" % root)
+    print("UPDATING: %s at %s" % (root, time.asctime()))
     print("=" * len("UPDATING: %s" % root))
 
     for dir in matching_dirs:
@@ -75,7 +76,7 @@ def main (root="."):
             os.startfile(log_filepath)
 
     print("=" * len("FINISHED: %s" % root))
-    print("FINISHED: %s" % root)
+    print("FINISHED: %s at %s" % (root, time.asctime()))
 
 if __name__ == '__main__':
     main(*sys.argv[1:])
