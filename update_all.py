@@ -4,20 +4,20 @@ import fnmatch
 import subprocess
 import time
 
-def svn_update(dirpath, branch=None):
+def svn_update(dirpath):
     basename = os.path.basename(dirpath)
     print("svn: %s" % (basename))
     os.chdir(dirpath)
     subprocess.call(["svn", "up", "--ignore-externals"])
     print("")
 
-def hg_update(dirpath, branch=None):
+def hg_update(dirpath):
     print("hg: %s" % (os.path.basename(dirpath)))
     os.chdir(dirpath)
     subprocess.call(["hg", "pull", "--update", "--verbose"])
     print("")
 
-def git_update(dirpath, branch=None):
+def git_update(dirpath):
     print("git: %s" % (os.path.basename(dirpath)))
     os.chdir(dirpath)
     for bline in subprocess.check_output(["git", "status"]).splitlines():
