@@ -4,22 +4,31 @@ import fnmatch
 import subprocess
 import time
 
-def svn_update (dirpath):
+def svn_update(dirpath, branch=None):
     basename = os.path.basename(dirpath)
     print("svn: %s" % (basename))
     os.chdir(dirpath)
     subprocess.call(["svn", "up", "--ignore-externals"])
     print("")
 
-def hg_update (dirpath):
-    print("hg: %s" % (os.path.basename (dirpath)))
+def hg_update(dirpath, branch=None):
+    print("hg: %s" % (os.path.basename(dirpath)))
     os.chdir(dirpath)
     subprocess.call(["hg", "pull", "--update", "--verbose"])
     print("")
 
-def git_update (dirpath):
-    print("git: %s" % (os.path.basename (dirpath)))
+def git_update(dirpath, branch=None):
+    print("git: %s" % (os.path.basename(dirpath)))
     os.chdir(dirpath)
+    for bline in subprocess.check_output(["git", "status"]).splitlines():
+        line = bline.decode("utf-8")
+        branch_preamble = "On branch "
+        if line.startswith(branch_preamble):
+            branch = line[len(branch_preamble):]
+            break
+    else:
+        branch = ""
+            
     for bremote in subprocess.check_output(["git", "remote"]).splitlines():
         remote = bremote.decode("utf-8")
         if remote == "origin":
@@ -27,12 +36,12 @@ def git_update (dirpath):
         else:
             command = "fetch"
         print(command, remote, "=>", end=" ")
-        subprocess.call(["git", command, "--verbose", remote])
+        subprocess.call(["git", command, "--verbose", remote, branch])
         print("")
 
     print("")
 
-def main (root="."):
+def main(root="."):
     root = os.path.abspath(root)
     noupdate_filepath = os.path.join(root, ".noupdate")
     update_filepath = os.path.join(root, ".update")
@@ -43,9 +52,9 @@ def main (root="."):
         dirs = ["*"]
     matching_dirs = []
     for dir in dirs:
-        matching_dirs.extend (
-            d for d in os.listdir (root)
-                if fnmatch.fnmatch (d, dir)
+        matching_dirs.extend(
+            d for d in os.listdir(root)
+                if fnmatch.fnmatch(d, dir)
                 and not d.endswith(".noupdate")
                 and not os.path.isfile(os.path.join(d, ".noupdate"))
         )
@@ -53,16 +62,22 @@ def main (root="."):
     print("UPDATING: %s at %s" % (root, time.asctime()))
     print("=" * len("UPDATING: %s" % root))
 
+    already_seen = set()
     for dir in matching_dirs:
         dirpath = os.path.join(root, dir)
+        if dirpath in already_seen:
+            continue
+        else:
+            already_seen.add(dirpath)
+        
         update_filepath = os.path.join(dirpath, ".update")
         if os.path.isfile(update_filepath):
             main(dirpath)
-        elif os.path.isdir(os.path.join (dirpath, ".svn")):
+        elif os.path.isdir(os.path.join(dirpath, ".svn")):
             svn_update(dirpath)
-        elif os.path.isdir(os.path.join (dirpath, ".hg")):
+        elif os.path.isdir(os.path.join(dirpath, ".hg")):
             hg_update(dirpath)
-        elif os.path.isdir(os.path.join (dirpath, ".git")):
+        elif os.path.isdir(os.path.join(dirpath, ".git")):
             git_update(dirpath)
 
         complete_filepath = os.path.join(dirpath, "complete.cmd")
