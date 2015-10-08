@@ -41,7 +41,11 @@ def git_update(dirpath):
 
     print("")
 
-def main(root="."):
+def main(root=".", *args):
+    options = set(args)
+    no_tests = "--no-tests" in options
+    no_complete = "--no-complete" in options
+    
     root = os.path.abspath(root)
     noupdate_filepath = os.path.join(root, ".noupdate")
     update_filepath = os.path.join(root, ".update")
@@ -80,15 +84,17 @@ def main(root="."):
         elif os.path.isdir(os.path.join(dirpath, ".git")):
             git_update(dirpath)
 
-        complete_filepath = os.path.join(dirpath, "complete.cmd")
-        if os.path.isfile(complete_filepath):
-            subprocess.call([complete_filepath], shell=True)
+        if not no_complete:
+            complete_filepath = os.path.join(dirpath, "complete.cmd")
+            if os.path.isfile(complete_filepath):
+                subprocess.call([complete_filepath], shell=True)
         
-        test_filepath = os.path.join(dirpath, "run-tests.cmd")
-        log_filepath = os.path.join(dirpath, "tests.log")
-        if os.path.isfile(test_filepath):
-            subprocess.call([test_filepath], shell=True)
-            os.startfile(log_filepath)
+        if not no_tests:
+            test_filepath = os.path.join(dirpath, "run-tests.cmd")
+            log_filepath = os.path.join(dirpath, "tests.log")
+            if os.path.isfile(test_filepath):
+                subprocess.call([test_filepath], shell=True)
+                os.startfile(log_filepath)
 
     print("=" * len("FINISHED: %s" % root))
     print("FINISHED: %s at %s" % (root, time.asctime()))
