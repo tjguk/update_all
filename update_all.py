@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os, sys
+import argparse
 import fnmatch
 import subprocess
 import time
@@ -41,10 +42,9 @@ def git_update(dirpath):
 
     print("")
 
-def main(root=".", *args):
-    options = set(args)
-    no_tests = "--no-tests" in options
-    no_complete = "--no-complete" in options
+def main(root=".", do_tests=True, do_complete=True):
+    no_tests = not do_tests
+    no_complete = not do_complete
     
     root = os.path.abspath(root)
     noupdate_filepath = os.path.join(root, ".noupdate")
@@ -100,4 +100,10 @@ def main(root=".", *args):
     print("FINISHED: %s at %s" % (root, time.asctime()))
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])
+    parser = argparse.ArgumentParser()
+    parser.add_argument("root", nargs="?", default=".")
+    parser.add_argument("--no-tests", dest="tests", action="store_const", const=False, default=True)
+    parser.add_argument("--no-complete", dest="complete", action="store_const", const=False, default=True)
+    args = parser.parse_args()
+
+    main(args.root, args.tests, args.complete)
