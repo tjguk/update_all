@@ -2,20 +2,52 @@ from __future__ import print_function
 import os, sys
 import argparse
 import fnmatch
+import glob
 import subprocess
 import time
+
+def which(command):
+    paths = ["."] + os.environ.get ("PATH", "").split (";")
+    exts = [e.lower () for e in os.environ.get ("PATHEXT", ".exe").split (";")]
+
+    base, ext = os.path.splitext(command)
+    if ext: exts = [ext]
+        
+    for path in paths:
+        for ext in exts:
+            filepath = os.path.join(path, "%s%s" % (base, ext))
+            for filename in glob.glob(filepath):
+                return filename
+
+SVN_COMMAND = which("svn")
+if SVN_COMMAND:
+    print("Subversion:", SVN_COMMAND)
+else:
+    print("Subversion not found")
+
+HG_COMMAND = which("hg")
+if HG_COMMAND:
+    print("Mercurial:", HG_COMMAND)
+else:
+    print("Mercurial not found")
+
+GIT_COMMAND = which("git")
+if GIT_COMMAND:
+    print("Git:", GIT_COMMAND)
+else:
+    print("Git not found")
 
 def svn_update(dirpath):
     basename = os.path.basename(dirpath)
     print("svn: %s" % (basename))
     os.chdir(dirpath)
-    subprocess.call(["svn", "up", "--ignore-externals"])
+    subprocess.call([SVN_COMMAND, "up", "--ignore-externals"])
     print("")
 
 def hg_update(dirpath):
     print("hg: %s" % (os.path.basename(dirpath)))
     os.chdir(dirpath)
-    subprocess.call(["hg", "pull", "--update", "--verbose"])
+    subprocess.call([HG_COMMAND, "pull", "--update", "--verbose"])
     print("")
 
 def git_update(dirpath):
@@ -30,14 +62,14 @@ def git_update(dirpath):
     else:
         branch = ""
             
-    for bremote in subprocess.check_output(["git", "remote"]).splitlines():
+    for bremote in subprocess.check_output([GIT_COMMAND, "remote"]).splitlines():
         remote = bremote.decode("utf-8")
         if remote == "origin":
             command = "pull"
         else:
             command = "fetch"
         print(command, remote, "=>", end=" ")
-        subprocess.call(["git", command, "--verbose", remote, branch])
+        subprocess.call([GIT_COMMAND, command, "--verbose", remote, branch])
         print("")
 
     print("")
@@ -78,11 +110,14 @@ def main(root=".", do_tests=True, do_complete=True):
         if os.path.isfile(update_filepath):
             main(dirpath)
         elif os.path.isdir(os.path.join(dirpath, ".svn")):
-            svn_update(dirpath)
+            if SVN_COMMAND:
+                svn_update(dirpath)
         elif os.path.isdir(os.path.join(dirpath, ".hg")):
-            hg_update(dirpath)
+            if HG_COMMAND:
+                hg_update(dirpath)
         elif os.path.isdir(os.path.join(dirpath, ".git")):
-            git_update(dirpath)
+            if GIT_COMMAND:
+                git_update(dirpath)
 
         if not no_complete:
             complete_filepath = os.path.join(dirpath, "complete.cmd")
