@@ -7,12 +7,12 @@ import sql
 
 db = sql.database("heat:heat@SRVDBHEAT/HEAT")
 svn = pysvn.Client()
-PREFIXES = {"ONHOLD", "mg"}
+PREFIXES = {"ONHOLD"}
 
 def call_is_closed(call_id):
     for call in sql.fetch_query(
-        db,
-        "SELECT CallStatus FROM CallLog WHERE CallID = ?",
+        db, 
+        "SELECT CallStatus FROM CallLog WHERE CallID = ?", 
         [call_id.zfill(8)]
     ):
         return call.CallStatus == 'Closed'
@@ -29,10 +29,10 @@ def go(relative_root=".", relative_release="release", relative_completed="_Compl
         print "Tests =>", tests
     else:
         print "No tests"
-
+    
     print "Updating..."
     svn.update(unicode(release), unicode(completed))
-
+    
     for folder in sorted(release.dirs()):
         call_name = folder.name
         for prefix_prefix in PREFIXES:
@@ -40,7 +40,7 @@ def go(relative_root=".", relative_release="release", relative_completed="_Compl
                 prefix = prefix_prefix + prefix_suffix
                 if folder.name.startswith(prefix):
                     call_name = folder.name[1+len(prefix):]
-
+                
         heat_call = call_name.split()[0]
         if heat_call.isdigit ():
             print "HEAT Call:", heat_call
@@ -65,7 +65,7 @@ def go(relative_root=".", relative_release="release", relative_completed="_Compl
                     print "ERROR:", err
                 else:
                     print "Changes committed"
-
+        
     print
 
 if __name__ == '__main__':
