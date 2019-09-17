@@ -12,7 +12,7 @@ def which(command):
 
     base, ext = os.path.splitext(command)
     if ext: exts = [ext]
-        
+
     for path in paths:
         for ext in exts:
             filepath = os.path.join(path, "%s%s" % (base, ext))
@@ -53,7 +53,7 @@ def hg_update(dirpath):
 def git_update(dirpath):
     print("git: %s" % (os.path.basename(dirpath)))
     os.chdir(dirpath)
-    for bline in subprocess.check_output(["git", "status"]).splitlines():
+    for bline in subprocess.check_output([GIT_COMMAND, "status"]).splitlines():
         line = bline.decode("utf-8")
         branch_preamble = "On branch "
         if line.startswith(branch_preamble):
@@ -61,7 +61,7 @@ def git_update(dirpath):
             break
     else:
         branch = ""
-            
+
     for bremote in subprocess.check_output([GIT_COMMAND, "remote"]).splitlines():
         remote = bremote.decode("utf-8")
         if remote == "origin":
@@ -77,7 +77,7 @@ def git_update(dirpath):
 def main(root=".", do_tests=True, do_complete=True):
     no_tests = not do_tests
     no_complete = not do_complete
-    
+
     root = os.path.abspath(root)
     noupdate_filepath = os.path.join(root, ".noupdate")
     update_filepath = os.path.join(root, ".update")
@@ -105,7 +105,7 @@ def main(root=".", do_tests=True, do_complete=True):
             continue
         else:
             already_seen.add(dirpath)
-        
+
         update_filepath = os.path.join(dirpath, ".update")
         if os.path.isfile(update_filepath):
             main(dirpath)
@@ -123,7 +123,7 @@ def main(root=".", do_tests=True, do_complete=True):
             complete_filepath = os.path.join(dirpath, "complete.cmd")
             if os.path.isfile(complete_filepath):
                 subprocess.call([complete_filepath], shell=True)
-        
+
         if not no_tests:
             test_filepath = os.path.join(dirpath, "run-tests.cmd")
             log_filepath = os.path.join(dirpath, "tests.log")
