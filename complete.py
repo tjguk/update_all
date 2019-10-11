@@ -5,7 +5,7 @@ import pysvn
 from winsys import fs
 import sql
 
-db = sql.database("heat:heat@SVR-DB-HEAT/HEAT")
+db = sql.database("heat:heat@SRVDBHEAT/HEAT")
 svn = pysvn.Client()
 PREFIX_PREFIXES = {"ONHOLD", "mg"}
 PREFIX_SUFFIXES = {"", " ", "."}
