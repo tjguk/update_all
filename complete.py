@@ -1,5 +1,4 @@
 #!python2
-from __future__ import print_function
 import os, sys
 import pysvn
 
@@ -10,7 +9,7 @@ for server_name in "SVR-DB-HEAT", "SRVDBHEAT", "EMG-DB1-PRD":
     try:
         db = sql.database("heat:heat@%s/HEAT" % server_name)
     except:
-        print("Unable to connect to", server_name)
+        print "Unable to connect to", server_name
         continue
     else:
         break
