@@ -1,11 +1,20 @@
 #!python2
+from __future__ import print_function
 import os, sys
 import pysvn
 
 from winsys import fs
 import sql
 
-db = sql.database("heat:heat@SVR-DB-HEAT/HEAT")
+for server_name in "SVR-DB-HEAT", "SRVDBHEAT", "EMG-DB1-PRD":
+    try:
+        db = sql.database("heat:heat@%s/HEAT" % server_name)
+    except:
+        print("Unable to connect to", server_name)
+        continue
+    else:
+        break
+
 svn = pysvn.Client()
 PREFIX_PREFIXES = {"ONHOLD", "mg"}
 PREFIX_SUFFIXES = {"", " ", "."}
