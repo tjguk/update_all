@@ -64,7 +64,18 @@ def go(relative_root=".", relative_release="release", relative_completed="_Compl
                             tested_folder = tests + (call_name.lstrip("0"))
                             svn.copy(unicode(test_folder), unicode(tested_folder))
                             to_checkin.append(unicode(tested_folder))
-                    completed_folder = completed + call_name.lstrip("0")
+                    completed_folder = base_completed_folder = completed + call_name.lstrip("0")
+                    for i in range(1, 10):
+                        #
+                        # If the folder already exists, loop round a few possibles until we succeed
+                        #
+                        if not completed_folder:
+                            break
+                        completed_folder = fs.dir("%s - %d" % (unicode(base_completed_folder).rstrip("\\"), i))
+                    else:
+                        print("All versions of folder name already taken; skipping")
+                        continue
+
                     svn.move(unicode(folder), unicode(completed_folder))
                     to_checkin.append(unicode(folder))
                     to_checkin.append(unicode(completed_folder))
