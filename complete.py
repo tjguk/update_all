@@ -3,16 +3,26 @@ import os, sys
 import pysvn
 
 from winsys import fs
-import sql
+import pyodbc
 
-for server_name in "SVR-DB-HEAT", "SRVDBHEAT", "EMG-DB1-PRD":
+SERVER_PORTS = [
+    ("gldbheatooh", 10010),
+    ("SVR-DB-HEAT", 1433),
+    ("SRVDBHEAT", 1433),
+    ("EMG-DB1-PRD", 1433),
+]
+
+db = None
+for (server_name, port) in SERVER_PORTS:
     try:
-        db = sql.database("heat:heat@%s/HEAT" % server_name)
+        db = pyodbc.connect(driver="SQL Server", server=server_name, database="HEAT", user="heat", password="heat", port=port)
     except:
         print "Unable to connect to", server_name
         continue
     else:
         break
+else:
+    raise RuntimeError("Unable to connect to any HEAT database")
 
 svn = pysvn.Client()
 PREFIX_PREFIXES = {"ONHOLD", "mg"}
@@ -20,14 +30,11 @@ PREFIX_SUFFIXES = {"", " ", "."}
 PREFIXES = [p + s for p in PREFIX_PREFIXES for s in PREFIX_SUFFIXES]
 
 def call_is_closed(call_id):
-    for call in sql.fetch_query(
-        db,
+    for call in db.execute(
         "SELECT CallStatus FROM CallLog WHERE CallID = ?",
         [call_id.zfill(8)]
     ):
         return call.CallStatus == 'Closed'
-
-
 
 def go(relative_root=".", relative_release="release", relative_completed="_Completed", relative_tests="tests"):
     root = fs.dir(os.getcwd()) + relative_root
