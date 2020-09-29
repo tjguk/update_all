@@ -80,6 +80,10 @@ def main(root=".", do_tests=True, do_complete=True):
 
     root = os.path.abspath(root)
     noupdate_filepath = os.path.join(root, ".noupdate")
+    if os.path.isfile(noupdate_filepath):
+        print("Found", noupdate_filepath, "; skipping...")
+        return
+
     update_filepath = os.path.join(root, ".update")
     dirs = []
     if os.path.isfile(update_filepath):
